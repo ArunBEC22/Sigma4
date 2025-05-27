@@ -18,6 +18,22 @@
                 <div class="invalid-feedback">Please enter a short description</div>
             </div>
 
+           <label for="category">Select Category</label>
+            <select class="form-select form-control animated-input" name="listing[category]" required>
+                <option selected>Select Category</option>
+                <option value="Trending">Trending</option>
+                <option value="Rooms">Rooms</option>
+                <option value="Iconic Cities">Iconic Cities</option>
+                <option value="Mountains">Mountains</option>
+                <option value="Castles">Castles</option>
+                <option value="Amazing Pools">Amazing Pools</option>
+                <option value="Camping">Camping</option>
+                <option value="Farms">Farms</option>
+                <option value="Doms">Doms</option>
+                <option value="Boats">Boats</option>
+                <option value="Historical Homes">Historical Homes</option>
+            </select>
+
             <div class="mb-3">
                 Original Listing Image <br/>
                 <img src="<%= originalImageUrl %>" />
