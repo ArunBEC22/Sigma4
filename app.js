@@ -132,7 +132,7 @@ app.get("/categories/:category", async (req, res) => {
     const { category } = req.params;
     try {
         // Fetch listings that match the category, case-insensitively
-        const listings = await Listing.find({ category: { $regex: new RegExp(^${category}$, "i") } });
+        const listings = await Listing.find({ category: { $regex: new RegExp(${category}$, "i") } });
         
         // Render the index page with filtered listings
         res.render("listings/index", { allListings: listings });
