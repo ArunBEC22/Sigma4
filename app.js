@@ -21,6 +21,7 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const Listing = require("./models/listing.js");
+const crypto = require('crypto'); 
 
 // Privacy and terms routes
 const legalRoutes = require("./routes/legal.js");
