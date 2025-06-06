@@ -89,6 +89,20 @@ app.use((req, res, next) => {
     next();
 });
 
+// --- Chatbase userId and userHash middleware ---
+app.use((req, res, next) => {
+    if (req.user) {
+        const userId = req.user._id.toString();
+        const userHash = crypto.createHmac('sha256', process.env.CHATBASE_SECRET).update(userId).digest('hex');
+        res.locals.userId = userId;
+        res.locals.userHash = userHash;
+    } else {
+        res.locals.userId = null;
+        res.locals.userHash = null;
+    }
+    next();
+});
+
 // Demo user route (optional)
 // app.get("/demouser", async (req, res) => {
 //     let fakeUser = new User({

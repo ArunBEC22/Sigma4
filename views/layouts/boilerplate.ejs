@@ -18,6 +18,47 @@
         <%- include("../includes/flash.ejs") %>
         <%- body %>
     </div>
+    <!-- Chat Toggle Button -->
+<button id="chatbot-toggle" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+  💬 Chat
+</button>
+
+<!-- Hidden Chatbot Iframe -->
+<iframe
+  id="chatbot-frame"
+  src="https://www.chatbase.co/chatbot-iframe/hEMWDIX39MqUUfjvBTG8H"
+  width="400"
+  height="500"
+  style="display: none; position: fixed; bottom: 80px; right: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9998;"
+  frameborder="0"
+></iframe>
+
+<script>
+  const chatbotToggle = document.getElementById("chatbot-toggle");
+  const chatbotFrame = document.getElementById("chatbot-frame");
+
+  chatbotToggle.addEventListener("click", () => {
+    if (chatbotFrame.style.display === "none") {
+      chatbotFrame.style.display = "block";
+    } else {
+      chatbotFrame.style.display = "none";
+    }
+  });
+</script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/js/script.js"></script>
+
+    <script>
+      window.chatbaseConfig = {
+        chatbotId: "your-chatbase-chatbot-id", // Replace with your actual Chatbase chatbot ID
+        userId: "<%= userId %>",
+        userHash: "<%= userHash %>"
+      };
+    </script>
+    <script src="https://www.chatbase.co/embed.min.js" id="chatbase-script" defer></script>
+   
     <%- include("../includes/footer.ejs") %>
    
 
