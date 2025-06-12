@@ -1,71 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WanderLust</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/rating.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderLust</title>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/rating.css" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+    rel="stylesheet" />
 </head>
 <body>
-    <%- include("../includes/navbar.ejs") %>
-    <div class="container">
-        <%- include("../includes/flash.ejs") %>
-        <%- body %>
-    </div>
-    <!-- Chat Toggle Button -->
-<button id="chatbot-toggle" class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-  💬 Chat
-</button>
 
-<!-- Hidden Chatbot Iframe -->
-<iframe
-  id="chatbot-frame"
-  src="https://www.chatbase.co/chatbot-iframe/hEMWDIX39MqUUfjvBTG8H"
-  width="400"
-  height="500"
-  style="display: none; position: fixed; bottom: 80px; right: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9998;"
-  frameborder="0"
-></iframe>
+  <!-- Navbar Include -->
+  <%- include("../includes/navbar.ejs") %>
 
-<script>
-  const chatbotToggle = document.getElementById("chatbot-toggle");
-  const chatbotFrame = document.getElementById("chatbot-frame");
+  <!-- Flash Messages -->
+  <div class="container">
+    <%- include("../includes/flash.ejs") %>
+    <%- body %>
+  </div>
 
-  chatbotToggle.addEventListener("click", () => {
-    if (chatbotFrame.style.display === "none") {
-      chatbotFrame.style.display = "block";
-    } else {
-      chatbotFrame.style.display = "none";
-    }
-  });
-</script>
+  <!-- Chat Toggle Button -->
+  <button id="chatbot-toggle" class="btn btn-primary"
+    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+    💬 Chat
+  </button>
 
+  <!-- Chatbot Iframe -->
+  <iframe id="chatbot-frame"
+    src="https://www.chatbase.co/chatbot-iframe/hEMWDIX39MqUUfjvBTG8H"
+    width="400" height="500"
+    style="display: none; position: fixed; bottom: 80px; right: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9998;"
+    frameborder="0">
+  </iframe>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="/js/script.js"></script>
+  <!-- Toggle Chatbot Script -->
+  <script>
+    const chatbotToggle = document.getElementById("chatbot-toggle");
+    const chatbotFrame = document.getElementById("chatbot-frame");
 
-    <script>
-      window.chatbaseConfig = {
-        chatbotId: "your-chatbase-chatbot-id", // Replace with your actual Chatbase chatbot ID
-        userId: "<%= userId %>",
-        userHash: "<%= userHash %>"
-      };
-    </script>
-    <script src="https://www.chatbase.co/embed.min.js" id="chatbase-script" defer></script>
-   
-    <%- include("../includes/footer.ejs") %>
-   
+    chatbotToggle.addEventListener("click", () => {
+      chatbotFrame.style.display = chatbotFrame.style.display === "none" ? "block" : "none";
+    });
+  </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="/js/script.js"></script>
+  <!-- Bootstrap Bundle JS (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-    
-   
+  <!-- Custom JS -->
+  <script src="/js/script.js"></script>
+
+  <!-- Chatbase Embed -->
+  <script>
+    window.chatbaseConfig = {
+      chatbotId: "your-chatbase-chatbot-id", // Optional if using iframe
+      userId: "<%= userId %>",
+      userHash: "<%= userHash %>"
+    };
+  </script>
+  <script src="https://www.chatbase.co/embed.min.js" id="chatbase-script" defer></script>
+
+  <!-- Footer Include -->
+  <%- include("../includes/footer.ejs") %>
+
 </body>
 </html>
+
