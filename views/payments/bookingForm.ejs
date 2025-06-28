@@ -1,0 +1,22 @@
+<% layout('/layouts/boilerplate') %>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Book Your Stay</h2>
+
+    <form action="/payment/create-checkout-session" method="POST" class="p-4 shadow bg-light rounded">
+        <input type="hidden" name="listingId" value="<%= listing._id %>">
+        <input type="hidden" name="pricePerDay" value="<%= listing.price %>">
+
+        <div class="mb-3">
+            <label for="checkInDate" class="form-label">Check-in Date</label>
+            <input type="date" class="form-control" id="checkInDate" name="checkInDate" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="days" class="form-label">Number of Days</label>
+            <input type="number" class="form-control" id="days" name="days" min="1" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Proceed to Pay</button>
+    </form>
+</div>

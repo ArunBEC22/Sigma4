@@ -1,84 +1,114 @@
-const listing = require("../models/listing");
-const Listing = require("../models/listing.js");
+const Listing = require("../models/listing");
 const { listingSchema } = require('../schema.js');
+const validateAddress = require("../utils/validateAddress");
+const Review = require("../models/review");
 
-
-module.exports.index = async (req,res)=>{
-    const allListings=await Listing.find({})
-    res.render("listings/index.ejs",{allListings});
+// GET all listings
+module.exports.index = async (req, res) => {
+  const allListings = await Listing.find({});
+  res.render("listings/index.ejs", { allListings });
 };
 
-
-
-
-    
-
-
-module.exports.renderNewForm = (req,res)=>{
-    
-    res.render("listings/new.ejs");
+// GET form to create a new listing
+module.exports.renderNewForm = (req, res) => {
+  res.render("listings/new.ejs");
 };
 
-module.exports.showListing = async (req,res)=>{
-    let {id} = req.params;
-    const listing1 = await listing.findById(id).populate({path :"reviews", populate : {
-        path : "author",
-    }}).populate("owner");
-    if(!listing1){
-        req.flash("success","Listing you requested for does not exist!");
-        res.redirect("/listings");
-    }
-    console.log(listing1);
-    res.render("listings/show.ejs",{listing1});
-}
+// GET a single listing
+module.exports.showListing = async (req, res) => {
+  const { id } = req.params;
+  const listing1 = await Listing.findById(id)
+    .populate({ path: "reviews", populate: { path: "author" } })
+    .populate("owner");
 
-module.exports.createListing =async (req, res, next) => {
-    let url=req.file.path;
-    let filename=req.file.path
-  
-    const newListing = new Listing(req.body.listing);
-    newListing.owner =req.user._id;
-    newListing.image={url,filename};
-   await newListing.save();
-   req.flash("success","New Listing Created!");
-   res.redirect("/listings");
+  if (!listing1) {
+    req.flash("error", "Listing you requested does not exist!");
+    return res.redirect("/listings");
+  }
+
+  res.render("listings/show.ejs", { listing1 });
 };
 
+// POST create a new listing (with address validation)
+module.exports.createListing = async (req, res, next) => {
+  try {
+    const { address } = req.body.listing;
 
-module.exports.editListing = async (req,res)=>{
-    let {id} = req.params;
-    const Listing = await listing.findById(id);
-    if(!Listing){
-        req.flash("success","Listing you requested for does not exist!");
-        res.redirect("/listings");
+    const result = await validateAddress(address);
+
+    if (!result.valid) {
+      req.flash("error", "Invalid address. Please enter a real-world location.");
+      return res.redirect("/listings/new");
     }
 
-    let originalImageUrl =Listing.image.url;
-    originalImageUrl= originalImageUrl.replace("/upload","/upload/w_250");
-    res.render("listings/edit.ejs",{Listing,  originalImageUrl});
-    };
+    const url = req.file?.path || '';
+    const filename = req.file?.filename || '';
 
+    const newListing = new Listing({
+      ...req.body.listing,
+      owner: req.user._id,
+      image: { url, filename },
+      formattedAddress: result.formattedAddress,
+      coordinates: result.location
+    });
 
-module.exports.updateListing = async (req,res)=>{
-    let {id} = req.params;
-    let listing = await Listing.findById(id);
-    let updatedlist = await Listing.findByIdAndUpdate(id,{...req.body.listing});
-    
-    if(typeof req.file !=="undefined"){
-        let url = req.file.path;
-        let filename = req.file.filename;
-        updatedlist.image = {url,filename};
-        await updatedlist.save();
-    }
-   
-
-    req.flash("success","Listing Updated");
-    res.redirect(`/listings/${id}`);
-    };
-
-module.exports.destroyListing = async (req,res)=>{
-    let {id} = req.params;
-    await listing.findByIdAndDelete(id);
-    req.flash("success","Lsiting Deleted");
+    await newListing.save();
+    req.flash("success", "New Listing Created!");
     res.redirect("/listings");
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET form to edit listing
+module.exports.editListing = async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+
+  if (!listing) {
+    req.flash("error", "Listing you requested does not exist!");
+    return res.redirect("/listings");
+  }
+
+  let originalImageUrl = listing.image.url || '';
+  originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
+
+  res.render("listings/edit.ejs", { Listing: listing, originalImageUrl });
+};
+
+// PUT update listing (with address validation)
+module.exports.updateListing = async (req, res) => {
+  const { id } = req.params;
+  const { address } = req.body.listing;
+
+  const result = await validateAddress(address);
+  if (!result.valid) {
+    req.flash("error", "Invalid address. Please enter a real-world location.");
+    return res.redirect(`/listings/${id}/edit`);
+  }
+
+  const updatedListing = await Listing.findByIdAndUpdate(id, {
+    ...req.body.listing,
+    formattedAddress: result.formattedAddress,
+    coordinates: result.location
+  });
+
+  if (req.file) {
+    updatedListing.image = {
+      url: req.file.path,
+      filename: req.file.filename
     };
+    await updatedListing.save();
+  }
+
+  req.flash("success", "Listing Updated");
+  res.redirect(`/listings/${id}`);
+};
+
+// DELETE a listing
+module.exports.destroyListing = async (req, res) => {
+  const { id } = req.params;
+  await Listing.findByIdAndDelete(id);
+  req.flash("success", "Listing Deleted");
+  res.redirect("/listings");
+};

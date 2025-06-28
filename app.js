@@ -2,7 +2,6 @@ if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -16,15 +15,21 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+require("./passport-setup"); // << Google Strategy added here
+const crypto = require("crypto");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
-const Listing = require("./models/listing.js");
-const crypto = require('crypto'); 
-
-// Privacy and terms routes
 const legalRoutes = require("./routes/legal.js");
+const Listing = require("./models/listing.js");
+
+const searchRouter = require("./routes/search");
+const categoryRouter = require("./routes/category");
+const paymentRoutes = require("./routes/payment");
+
+
+
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -35,27 +40,18 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const dbUrl = process.env.ATLASDB_URL;
 
-main().then(() => {
-    console.log("connected to db");
-}).catch((err) => {
-    console.log(err);
-});
-
+main().then(() => console.log("connected to db")).catch(console.log);
 async function main() {
     await mongoose.connect(dbUrl);
 }
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto: {
-        secret: process.env.SECRET,
-    },
+    crypto: { secret: process.env.SECRET },
     touchAfter: 24 * 3600,
 });
 
-store.on("error", (err) => {
-    console.log("ERROR IN MONGO SESSION STORE", err);
-});
+store.on("error", (err) => console.log("SESSION STORE ERROR", err));
 
 const sessionOptions = {
     store,
@@ -69,17 +65,14 @@ const sessionOptions = {
     }
 };
 
-app.get("/", (req, res) => {
-    res.redirect("/listings");
-});
-
 app.use(session(sessionOptions));
 app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
 
+// Local Strategy
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -90,7 +83,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- Chatbase userId and userHash middleware ---
+// Chatbase Hash Setup
 app.use((req, res, next) => {
     if (req.user) {
         const userId = req.user._id.toString();
@@ -104,53 +97,39 @@ app.use((req, res, next) => {
     next();
 });
 
-// Demo user route (optional)
-// app.get("/demouser", async (req, res) => {
-//     let fakeUser = new User({
-//         email: "student@gmail.com",
-//         username: "sigma-student",
-//     });
-//     let registeredUser = await User.register(fakeUser, "helloworld");
-//     res.send(registeredUser);
-// });
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.use("/", legalRoutes);
+app.use("/search", searchRouter);
+app.use("/categories", categoryRouter);
+app.use("/payment", paymentRoutes);
 
-app.use("/search", async (req, res) => {
-    try {
-        let { searchList } = req.body;
-        let list = await Listing.find({
-            country: { $regex: searchList, $options: "i" }
-        });
-        res.render("listings/search.ejs", { list });
-    } catch (err) {
-        res.status(500).send({ message: err.message || "Error Occurred" });
+
+
+// Google Auth Routes
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        res.redirect('/');
     }
-});
+);
 
-app.get("/categories/:category", async (req, res) => {
-    const { category } = req.params;
-    try {
-        const listings = await Listing.find({
-            category: { $regex: new RegExp(`${category}$`, "i") }
-        });
-        res.render("listings/index", { allListings: listings });
-    } catch (err) {
-        req.flash("error", "Unable to fetch listings for this category.");
-        res.redirect("/");
-    }
-});
 
-// app.use("/privacy", async (req, res) => {
-//     res.render("listings/privacy.ejs");
-// });
 
-// app.use("/terms", async (req, res) => {
-//     res.render("listings/terms.ejs");
-// });
+app.use("/payment", paymentRoutes);
+
+
+
+
 
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found!"));
@@ -162,6 +141,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(8080, () => {
-    console.log("app listening to port 8080");
+    console.log("app listening on port 8080");
 });
 

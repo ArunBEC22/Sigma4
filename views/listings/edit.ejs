@@ -23,15 +23,15 @@
                 <option selected>Select Category</option>
                 <option value="Trending">Trending</option>
                 <option value="Rooms">Rooms</option>
-                <option value="Iconic Cities">Iconic Cities</option>
+                <option value="Iconic-Cities">Iconic Cities</option>
                 <option value="Mountains">Mountains</option>
                 <option value="Castles">Castles</option>
-                <option value="Amazing Pools">Amazing Pools</option>
+                <option value="Amazing-Pools">Amazing Pools</option>
                 <option value="Camping">Camping</option>
                 <option value="Farms">Farms</option>
                 <option value="Doms">Doms</option>
                 <option value="Boats">Boats</option>
-                <option value="Historical Homes">Historical Homes</option>
+                <option value="Historical-Homes">Historical Homes</option>
             </select>
 
             <div class="mb-3">
@@ -59,10 +59,10 @@
             </div>
             
             <div class="mb-3">
-                <label for="location" class="form-label">Location</label>
-                <input value="<%= Listing.location %>" name="listing[location]" type="text" class="form-control animated-input" required>
-                <div class="invalid-feedback">Location should be valid</div>
-            </div>
+        <label for="address" class="form-label">Full Address</label>
+        <input placeholder="<%= Listing.address %>" name="listing[address]" type="text" class="form-control animated-input" required>
+        <div class="invalid-feedback">Please enter a valid address</div>
+      </div>
 
             <button class="btn btn-dark edit-btn mt-3 animated-button">Edit your listing</button>
         </form>

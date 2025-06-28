@@ -15,3 +15,5 @@ exports.terms = async (req, res) => {
 };
 
 
+
+

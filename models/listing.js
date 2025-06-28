@@ -13,22 +13,34 @@ const listingSchema = new Schema({
         filename: String,
     },
     price: Number,
+
+    // Original fields
     location: String,
     country: String,
+
+    // ✅ New: validated full address
+    formattedAddress: String,
+
+    // ✅ New: coordinates from Nominatim
+    coordinates: {
+        lat: String,
+        lon: String,
+    },
+
     category: {
         type: String,
         enum: [
             "Trending",
             "Rooms",
-            "Iconic Cities",
+            "Iconic-Cities",
             "Mountains",
             "Castles",
-            "Amazing Pools",
+            "Amazing-Pools",
             "Camping",
             "Farms",
             "Doms",
             "Boats",
-            "Historical Homes",
+            "Historical-Homes",
         ],
         required: true,
     },
@@ -44,6 +56,7 @@ const listingSchema = new Schema({
     },
 });
 
+// Cascade delete reviews
 listingSchema.post("findOneAndDelete", async (listing) => {
     if (listing) {
         await Review.deleteMany({ _id: { $in: listing.reviews } });
