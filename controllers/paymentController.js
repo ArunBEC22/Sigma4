@@ -3,6 +3,7 @@ const Booking = require("../models/bookings");
 const Listing = require("../models/listing");
 const sendBookingConfirmation = require("../utils/mailer");
 const PDFDocument = require("pdfkit");
+const activityLogger = require("../utils/activityLogger");
 
 // Create Stripe Checkout Session
 module.exports.createCheckoutSession = async (req, res) => {
@@ -18,10 +19,15 @@ module.exports.createCheckoutSession = async (req, res) => {
     const parsedAmount = parseFloat(amount);
     const totalAmount = parsedAmount * parsedStayDays;
 
+    const checkin = new Date(checkInDate);
+    const checkout = new Date(checkin);
+    checkout.setDate(checkout.getDate() + parsedStayDays);
+
     const booking = new Booking({
       user: userId,
       listing: listingId,
-      checkinDate: new Date(checkInDate),
+      checkinDate: checkin,
+      checkoutDate: checkout,
       stayDays: parsedStayDays,
       amount: totalAmount,
     });
@@ -88,6 +94,12 @@ module.exports.paymentSuccess = async (req, res) => {
       booking.amount,
       pdfBuffer
     );
+
+    // Log booking activity for social proof
+    await activityLogger.logBooking(booking, booking.listing);
+    
+    // Calculate and update trust score
+    await activityLogger.calculateTrustScore(booking.listing._id);
 
     req.flash("success", "Payment successful! Confirmation email with receipt sent.");
     res.redirect(`/listings/${booking.listing._id}`);

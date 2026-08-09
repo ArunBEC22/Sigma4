@@ -1,0 +1,118 @@
+<% layout('admin/layout') -%>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5><i class="fas fa-users"></i> Registered Users (<%= users.length %>)</h5>
+</div>
+
+<!-- Users Table -->
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Avatar</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Total Bookings</th>
+                    <th>Total Spent</th>
+                    <th>Member Since</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(users.length === 0) { %>
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="fas fa-users fa-3x mb-3"></i>
+                            <p class="mb-0">No users found</p>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td>
+                                <div class="user-avatar" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                    <%= user.username.charAt(0).toUpperCase() %>
+                                </div>
+                            </td>
+                            <td>
+                                <strong><%= user.username %></strong>
+                                <% if(user.googleId) { %>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="fab fa-google"></i> Google Account
+                                    </small>
+                                <% } %>
+                            </td>
+                            <td><%= user.email || 'N/A' %></td>
+                            <td>
+                                <% if(user.role === 'admin') { %>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-shield-alt"></i> Admin
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-user"></i> User
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <span class="badge bg-info fs-6"><%= user.bookingCount %></span>
+                            </td>
+                            <td>
+                                <strong class="text-success">₹<%= user.totalSpent.toLocaleString() %></strong>
+                            </td>
+                            <td>
+                                <%= new Date(user.createdAt).toLocaleDateString() %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<% if(users.length > 0) { %>
+    <div class="row g-3 mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Users</h6>
+                    <h3><%= users.length %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Admin Users</h6>
+                    <h3 class="text-danger">
+                        <%= users.filter(u => u.role === 'admin').length %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Active Users</h6>
+                    <h3 class="text-success">
+                        <%= users.filter(u => u.bookingCount > 0).length %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Revenue</h6>
+                    <h3 class="text-primary">
+                        ₹<%= users.reduce((sum, u) => sum + u.totalSpent, 0).toLocaleString() %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>

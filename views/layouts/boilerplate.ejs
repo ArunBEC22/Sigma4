@@ -8,6 +8,7 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/rating.css" />
+  <link rel="stylesheet" href="/css/chatWidget.css" />
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -30,35 +31,19 @@
   <!-- Navbar Include -->
   <%- include("../includes/navbar.ejs") %>
 
+  <!-- Pro Upgrade Banner (Only for free users) -->
+  <%- include("../partials/proUpgradeBanner.ejs") %>
+
   <!-- Flash Messages -->
   <div class="container">
     <%- include("../includes/flash.ejs") %>
     <%- body %>
   </div>
 
-  <!-- Chat Toggle Button -->
-  <button id="chatbot-toggle" class="btn btn-primary"
-    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999 ;background-color: #e63946; border: 2px solid #e63946;">
-    💬 WanderBot
-  </button>
-
-  <!-- Chatbot Iframe -->
-  <iframe id="chatbot-frame"
-    src="https://www.chatbase.co/chatbot-iframe/hEMWDIX39MqUUfjvBTG8H"
-    width="400" height="500"
-    style="display: none; position: fixed; bottom: 80px; right: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 9998;"
-    frameborder="0">
-  </iframe>
-
-  <!-- Toggle Chatbot Script -->
-  <script>
-    const chatbotToggle = document.getElementById("chatbot-toggle");
-    const chatbotFrame = document.getElementById("chatbot-frame");
-
-    chatbotToggle.addEventListener("click", () => {
-      chatbotFrame.style.display = chatbotFrame.style.display === "none" ? "block" : "none";
-    });
-  </script>
+  <!-- AI Chat Widget (Only show if user is logged in and has Pro subscription) -->
+  <% if (currUser && currUser.isPro && currUser.isPro()) { %>
+    <%- include("../partials/chatWidget.ejs") %>
+  <% } %>
 
   <!-- Bootstrap Bundle JS (includes Popper) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -66,16 +51,16 @@
 
   <!-- Custom JS -->
   <script src="/js/script.js"></script>
-
-  <!-- Chatbase Embed -->
-  <script>
-    window.chatbaseConfig = {
-      chatbotId: "your-chatbase-chatbot-id", // Optional if using iframe
-      userId: "<%= userId %>",
-      userHash: "<%= userHash %>"
-    };
-  </script>
-  <script src="https://www.chatbase.co/embed.min.js" id="chatbase-script" defer></script>
+  
+  <!-- AI Chat Widget JS (Only load if user is logged in and has Pro) -->
+  <% if (currUser && currUser.isPro && currUser.isPro()) { %>
+    <script src="/js/chatWidget.js"></script>
+  <% } %>
+  
+  <!-- Activity Feed Widget JS (Only load if user is logged in and has Pro) -->
+  <% if (currUser && currUser.isPro && currUser.isPro()) { %>
+    <script src="/js/activityFeed.js"></script>
+  <% } %>
 
   <!-- Footer Include -->
   <%- include("../includes/footer.ejs") %>

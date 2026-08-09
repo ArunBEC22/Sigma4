@@ -1,0 +1,175 @@
+<% layout('admin/layout') -%>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3><%= totalBookings %></h3>
+            <p>Total Bookings</p>
+            <small class="text-muted">
+                <i class="fas fa-check-circle text-success"></i> <%= confirmedBookings %> Confirmed
+            </small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h3>₹<%= totalRevenue.toLocaleString() %></h3>
+            <p>Total Revenue</p>
+            <small class="text-muted">
+                <i class="fas fa-arrow-up text-success"></i> This week: ₹<%= weekRevenue.toLocaleString() %>
+            </small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <h3><%= totalListings %></h3>
+            <p>Active Listings</p>
+            <small class="text-muted">
+                <a href="/admin/listings" class="text-decoration-none">Manage Listings →</a>
+            </small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <div class="icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3><%= totalUsers %></h3>
+            <p>Registered Users</p>
+            <small class="text-muted">
+                <a href="/admin/users" class="text-decoration-none">View Users →</a>
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="stat-card">
+            <h5><i class="fas fa-calendar-day"></i> Today's Activity</h5>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span>New Bookings Today</span>
+                <strong class="text-primary"><%= todayBookings %></strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span>Pending Payments</span>
+                <strong class="text-warning"><%= pendingBookings %></strong>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="stat-card">
+            <h5><i class="fas fa-chart-pie"></i> Quick Actions</h5>
+            <hr>
+            <div class="d-grid gap-2">
+                <a href="/listings/new" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Listing
+                </a>
+                <a href="/admin/bookings" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-check"></i> View All Bookings
+                </a>
+                <!-- <a href="/admin/analytics" class="btn btn-outline-success">
+                    <i class="fas fa-chart-line"></i> View Analytics
+                </a> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings Table -->
+<div class="table-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5><i class="fas fa-clock"></i> Recent Bookings</h5>
+        <a href="/admin/bookings" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>User</th>
+                    <th>Listing</th>
+                    <th>Check-in</th>
+                    <th>Days</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(recentBookings.length === 0) { %>
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p>No bookings yet</p>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% recentBookings.forEach(booking => { %>
+                        <tr>
+                            <td><small><%= booking._id.toString().slice(-6) %></small></td>
+                            <td>
+                                <% if(booking.user) { %>
+                                    <strong><%= booking.user.username %></strong><br>
+                                    <small class="text-muted"><%= booking.user.email %></small>
+                                <% } else { %>
+                                    <span class="text-muted">User Deleted</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if(booking.listing) { %>
+                                    <strong><%= booking.listing.title %></strong><br>
+                                    <small class="text-muted"><%= booking.listing.location %></small>
+                                <% } else { %>
+                                    <span class="text-muted">Listing Deleted</span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(booking.checkinDate).toLocaleDateString() %></td>
+                            <td><%= booking.stayDays %> days</td>
+                            <td><strong>₹<%= booking.amount.toLocaleString() %></strong></td>
+                            <td>
+                                <% if(booking.status === 'confirmed') { %>
+                                    <span class="badge bg-success">Confirmed</span>
+                                <% } else if(booking.status === 'pending_payment') { %>
+                                    <span class="badge bg-warning">Pending</span>
+                                <% } else if(booking.status === 'cancelled') { %>
+                                    <span class="badge bg-danger">Cancelled</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary"><%= booking.status %></span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/admin/bookings/<%= booking._id %>" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Auto-refresh dashboard every 5 minutes
+    setTimeout(() => {
+        location.reload();
+    }, 300000);
+</script>

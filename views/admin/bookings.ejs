@@ -1,0 +1,222 @@
+<% layout('admin/layout') -%>
+
+<!-- Filters Section -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3"><i class="fas fa-filter"></i> Filter Bookings</h5>
+        <form action="/admin/bookings" method="GET">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Status</option>
+                        <option value="confirmed" <%= filters.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                        <option value="pending_payment" <%= filters.status === 'pending_payment' ? 'selected' : '' %>>Pending Payment</option>
+                        <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                        <option value="payment_failed" <%= filters.status === 'payment_failed' ? 'selected' : '' %>>Payment Failed</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">Listing</label>
+                    <select name="listing" class="form-select">
+                        <option value="all">All Listings</option>
+                        <% allListings.forEach(listing => { %>
+                            <option value="<%= listing._id %>" <%= filters.listing === listing._id.toString() ? 'selected' : '' %>>
+                                <%= listing.title %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="startDate" class="form-control" value="<%= filters.startDate || '' %>">
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="endDate" class="form-control" value="<%= filters.endDate || '' %>">
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-10">
+                    <input type="text" name="search" class="form-control" placeholder="Search by user name, email, or booking ID..." value="<%= filters.search || '' %>">
+                </div>
+                <div class="col-md-2">
+                    <a href="/admin/bookings" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Export Button -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5><i class="fas fa-calendar-check"></i> All Bookings (<%= bookings.length %>)</h5>
+    <a href="/admin/export/bookings" class="btn btn-success">
+        <i class="fas fa-file-export"></i> Export to CSV
+    </a>
+</div>
+
+<!-- Bookings Table -->
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Listing</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Days</th>
+                    <th>Guests</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(bookings.length === 0) { %>
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-5">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p class="mb-0">No bookings found</p>
+                            <small>Try adjusting your filters</small>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% bookings.forEach(booking => { %>
+                        <tr>
+                            <td>
+                                <small class="font-monospace">
+                                    <%= booking._id.toString().slice(-8) %>
+                                </small>
+                            </td>
+                            <td>
+                                <% if(booking.user) { %>
+                                    <div>
+                                        <strong><%= booking.user.username %></strong>
+                                        <br>
+                                        <small class="text-muted"><%= booking.user.email %></small>
+                                    </div>
+                                <% } else { %>
+                                    <span class="text-muted">
+                                        <i class="fas fa-user-slash"></i> User Deleted
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if(booking.listing) { %>
+                                    <div>
+                                        <strong><%= booking.listing.title %></strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt"></i> <%= booking.listing.location %>
+                                        </small>
+                                    </div>
+                                <% } else { %>
+                                    <span class="text-muted">
+                                        <i class="fas fa-exclamation-triangle"></i> Listing Deleted
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(booking.checkinDate).toLocaleDateString() %></td>
+                            <td><%= new Date(booking.checkoutDate).toLocaleDateString() %></td>
+                            <td><span class="badge bg-info"><%= booking.stayDays %></span></td>
+                            <td><span class="badge bg-secondary"><%= booking.guests %></span></td>
+                            <td><strong>₹<%= booking.amount.toLocaleString() %></strong></td>
+                            <td>
+                                <% if(booking.status === 'confirmed') { %>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> Confirmed
+                                    </span>
+                                <% } else if(booking.status === 'pending_payment') { %>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </span>
+                                <% } else if(booking.status === 'cancelled') { %>
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times-circle"></i> Cancelled
+                                    </span>
+                                <% } else if(booking.status === 'payment_failed') { %>
+                                    <span class="badge bg-dark">
+                                        <i class="fas fa-exclamation-triangle"></i> Failed
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary"><%= booking.status %></span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    <%= new Date(booking.createdAt).toLocaleDateString() %>
+                                </small>
+                            </td>
+                            <td>
+                                <a href="/admin/bookings/<%= booking._id %>" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<% if(bookings.length > 0) { %>
+    <div class="row g-3 mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Bookings</h6>
+                    <h3><%= bookings.length %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Confirmed</h6>
+                    <h3 class="text-success">
+                        <%= bookings.filter(b => b.status === 'confirmed').length %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending</h6>
+                    <h3 class="text-warning">
+                        <%= bookings.filter(b => b.status === 'pending_payment').length %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Revenue</h6>
+                    <h3 class="text-primary">
+                        ₹<%= bookings.filter(b => b.status === 'confirmed').reduce((sum, b) => sum + b.amount, 0).toLocaleString() %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>

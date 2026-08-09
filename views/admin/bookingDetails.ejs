@@ -1,0 +1,257 @@
+<% layout('admin/layout') -%>
+
+<div class="mb-3">
+    <a href="/admin/bookings" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Bookings
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Booking Information -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Booking Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Booking ID:</strong>
+                        <p class="font-monospace"><%= booking._id %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Status:</strong>
+                        <p>
+                            <% if(booking.status === 'confirmed') { %>
+                                <span class="badge bg-success fs-6">
+                                    <i class="fas fa-check-circle"></i> Confirmed
+                                </span>
+                            <% } else if(booking.status === 'pending_payment') { %>
+                                <span class="badge bg-warning text-dark fs-6">
+                                    <i class="fas fa-clock"></i> Pending Payment
+                                </span>
+                            <% } else if(booking.status === 'cancelled') { %>
+                                <span class="badge bg-danger fs-6">
+                                    <i class="fas fa-times-circle"></i> Cancelled
+                                </span>
+                            <% } else { %>
+                                <span class="badge bg-secondary fs-6"><%= booking.status %></span>
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-primary"><i class="fas fa-calendar-alt"></i> Booking Dates</h6>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>Check-in:</strong>
+                        <p><%= new Date(booking.checkinDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Check-out:</strong>
+                        <p><%= new Date(booking.checkoutDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Duration:</strong>
+                        <p><span class="badge bg-info fs-6"><%= booking.stayDays %> days</span></p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-primary"><i class="fas fa-users"></i> Guest Information</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Number of Guests:</strong>
+                        <p><span class="badge bg-secondary fs-6"><%= booking.guests %> guests</span></p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6 class="text-primary"><i class="fas fa-dollar-sign"></i> Payment Information</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Total Amount:</strong>
+                        <p class="fs-4 text-success">₹<%= booking.amount.toLocaleString() %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Payment Status:</strong>
+                        <p>
+                            <% if(booking.paymentStatus === 'success') { %>
+                                <span class="badge bg-success">Success</span>
+                            <% } else if(booking.paymentStatus === 'pending') { %>
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            <% } else { %>
+                                <span class="badge bg-danger">Failed</span>
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+                
+                <% if(booking.transactionId) { %>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Transaction ID:</strong>
+                            <p class="font-monospace"><%= booking.transactionId %></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Payment ID:</strong>
+                            <p class="font-monospace"><%= booking.paymentId || 'N/A' %></p>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <% if(booking.stripeSessionId) { %>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <strong>Stripe Session ID:</strong>
+                            <p class="font-monospace small"><%= booking.stripeSessionId %></p>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <hr>
+                
+                <h6 class="text-primary"><i class="fas fa-shield-alt"></i> Fraud Check</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Fraud Check Status:</strong>
+                        <p>
+                            <% if(booking.fraudCheckPassed) { %>
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Passed
+                                </span>
+                            <% } else { %>
+                                <span class="badge bg-warning text-dark">
+                                    <i class="fas fa-exclamation-triangle"></i> Not Verified
+                                </span>
+                            <% } %>
+                        </p>
+                    </div>
+                    <% if(booking.fraudScore) { %>
+                        <div class="col-md-6">
+                            <strong>Fraud Score:</strong>
+                            <p><%= booking.fraudScore %></p>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Created At:</strong>
+                        <p><%= new Date(booking.createdAt).toLocaleString() %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Last Updated:</strong>
+                        <p><%= new Date(booking.updatedAt).toLocaleString() %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Update Status Form -->
+        <div class="card mt-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fas fa-edit"></i> Update Booking Status</h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin/bookings/<%= booking._id %>?_method=PUT" method="POST">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <select name="status" class="form-select" required>
+                                <option value="pending_payment" <%= booking.status === 'pending_payment' ? 'selected' : '' %>>Pending Payment</option>
+                                <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                <option value="cancelled" <%= booking.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                <option value="payment_failed" <%= booking.status === 'payment_failed' ? 'selected' : '' %>>Payment Failed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save"></i> Update Status
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User & Listing Information -->
+    <div class="col-md-4">
+        <!-- User Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-user"></i> User Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="user-avatar mx-auto" style="width: 80px; height: 80px; font-size: 2rem;">
+                        <%= booking.user.username.charAt(0).toUpperCase() %>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <strong>Username:</strong>
+                    <p><%= booking.user.username %></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Email:</strong>
+                    <p><%= booking.user.email %></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Role:</strong>
+                    <p><span class="badge bg-secondary"><%= booking.user.role %></span></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Member Since:</strong>
+                    <p><%= new Date(booking.user.createdAt).toLocaleDateString() %></p>
+                </div>
+                <hr>
+                <a href="/admin/users" class="btn btn-outline-info w-100">
+                    <i class="fas fa-user-circle"></i> View All Users
+                </a>
+            </div>
+        </div>
+        
+        <!-- Listing Card -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-home"></i> Listing Information</h5>
+            </div>
+            <div class="card-body">
+                <% if(booking.listing.image && booking.listing.image.url) { %>
+                    <img src="<%= booking.listing.image.url %>" class="img-fluid rounded mb-3" alt="<%= booking.listing.title %>">
+                <% } %>
+                <div class="mb-2">
+                    <strong>Title:</strong>
+                    <p><%= booking.listing.title %></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Location:</strong>
+                    <p><i class="fas fa-map-marker-alt"></i> <%= booking.listing.location %></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Country:</strong>
+                    <p><%= booking.listing.country %></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Category:</strong>
+                    <p><span class="badge bg-primary"><%= booking.listing.category %></span></p>
+                </div>
+                <div class="mb-2">
+                    <strong>Price per Night:</strong>
+                    <p class="fs-5 text-success">₹<%= booking.listing.price.toLocaleString() %></p>
+                </div>
+                <hr>
+                <a href="/listings/<%= booking.listing._id %>" class="btn btn-outline-success w-100" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Listing
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</div>

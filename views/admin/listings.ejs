@@ -1,0 +1,156 @@
+<% layout('admin/layout') -%>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h5><i class="fas fa-home"></i> Manage Listings (<%= listings.length %>)</h5>
+    <a href="/listings/new" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Listing
+    </a>
+</div>
+
+<!-- Listings Table -->
+<div class="table-card">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Category</th>
+                    <th>Price/Night</th>
+                    <th>Bookings</th>
+                    <th>Revenue</th>
+                    <th>Rating</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(listings.length === 0) { %>
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-5">
+                            <i class="fas fa-home fa-3x mb-3"></i>
+                            <p class="mb-0">No listings found</p>
+                            <a href="/listings/new" class="btn btn-primary mt-3">
+                                <i class="fas fa-plus"></i> Add Your First Listing
+                            </a>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% listings.forEach(listing => { %>
+                        <tr>
+                            <td>
+                                <% if(listing.image && listing.image.url) { %>
+                                    <img src="<%= listing.image.url %>" alt="<%= listing.title %>" 
+                                         style="width: 80px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                <% } else { %>
+                                    <div style="width: 80px; height: 60px; background: #e9ecef; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                <% } %>
+                            </td>
+                            <td>
+                                <strong><%= listing.title %></strong>
+                                <br>
+                                <small class="text-muted">
+                                    ID: <%= listing._id.toString().slice(-8) %>
+                                </small>
+                            </td>
+                            <td>
+                                <i class="fas fa-map-marker-alt text-danger"></i> <%= listing.location %>
+                                <br>
+                                <small class="text-muted"><%= listing.country %></small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary"><%= listing.category %></span>
+                            </td>
+                            <td>
+                                <strong class="text-success">₹<%= listing.price.toLocaleString() %></strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-info"><%= listing.bookingCount %></span>
+                            </td>
+                            <td>
+                                <strong>₹<%= listing.revenue.toLocaleString() %></strong>
+                            </td>
+                            <td>
+                                <% if(listing.avgRating > 0) { %>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-star"></i> <%= listing.avgRating %>
+                                    </span>
+                                <% } else { %>
+                                    <span class="text-muted">No ratings</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-info" title="View" target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/listings/<%= listing._id %>/edit" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline" 
+                                          onsubmit="return confirm('Are you sure you want to delete this listing?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<% if(listings.length > 0) { %>
+    <div class="row g-3 mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Listings</h6>
+                    <h3><%= listings.length %></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Bookings</h6>
+                    <h3 class="text-info">
+                        <%= listings.reduce((sum, l) => sum + l.bookingCount, 0) %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Revenue</h6>
+                    <h3 class="text-success">
+                        ₹<%= listings.reduce((sum, l) => sum + l.revenue, 0).toLocaleString() %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Avg. Rating</h6>
+                    <h3 class="text-warning">
+                        <% 
+                            const ratingsCount = listings.filter(l => l.avgRating > 0).length;
+                            const avgOverall = ratingsCount > 0 
+                                ? (listings.reduce((sum, l) => sum + parseFloat(l.avgRating), 0) / ratingsCount).toFixed(1)
+                                : 0;
+                        %>
+                        <i class="fas fa-star"></i> <%= avgOverall %>
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>

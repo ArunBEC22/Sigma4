@@ -54,6 +54,55 @@ const listingSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
+    
+    // Social Proof Fields
+    viewCount: {
+        type: Number,
+        default: 0
+    },
+    currentViewers: {
+        type: Number,
+        default: 0
+    },
+    lastViewedAt: {
+        type: Date
+    },
+    bookingCount: {
+        type: Number,
+        default: 0
+    },
+    weeklyBookings: {
+        type: Number,
+        default: 0
+    },
+    lastBookedAt: {
+        type: Date
+    },
+    isSuperhost: {
+        type: Boolean,
+        default: false
+    },
+    trustScore: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    responseTime: {
+        type: String,
+        enum: ['instant', 'fast', 'moderate', 'slow'],
+        default: 'moderate'
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    instantBooking: {
+        type: Boolean,
+        default: false
+    }
+}, {
+    timestamps: true
 });
 
 // Cascade delete reviews

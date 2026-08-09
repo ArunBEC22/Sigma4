@@ -22,11 +22,15 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const legalRoutes = require("./routes/legal.js");
+const adminRouter = require("./routes/admin.js");
 const Listing = require("./models/listing.js");
 
 const searchRouter = require("./routes/search");
 const categoryRouter = require("./routes/category");
 const paymentRoutes = require("./routes/payment");
+const chatRouter = require("./routes/chat.js");
+const activityRouter = require("./routes/activity.js");
+const subscriptionRouter = require("./routes/subscription.js");
 
 
 
@@ -34,11 +38,12 @@ const paymentRoutes = require("./routes/payment");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Add JSON parsing for chat API
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-const dbUrl = process.env.ATLASDB_URL;
+const dbUrl = process.env.MONGO_URL;
 
 main().then(() => console.log("connected to db")).catch(console.log);
 async function main() {
@@ -47,7 +52,6 @@ async function main() {
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto: { secret: process.env.SECRET },
     touchAfter: 24 * 3600,
 });
 
@@ -76,10 +80,25 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Subscription status checker middleware
+const { checkSubscriptionStatus } = require("./middleware/subscriptionMiddleware");
+const subscriptionChecker = require("./utils/subscriptionChecker");
+app.use(checkSubscriptionStatus);
+
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user;
+    
+    // Add subscription helper functions to res.locals
+    if (req.user) {
+        res.locals.isExpiringSoon = subscriptionChecker.isExpiringSoon(req.user);
+        res.locals.daysUntilExpiry = subscriptionChecker.getDaysUntilExpiry(req.user);
+    } else {
+        res.locals.isExpiringSoon = false;
+        res.locals.daysUntilExpiry = null;
+    }
+    
     next();
 });
 
@@ -108,6 +127,10 @@ app.use("/", legalRoutes);
 app.use("/search", searchRouter);
 app.use("/categories", categoryRouter);
 app.use("/payment", paymentRoutes);
+app.use("/subscription", subscriptionRouter);
+app.use("/chat", chatRouter);
+app.use("/admin", adminRouter);
+app.use("/api/activity", activityRouter);
 
 
 
@@ -140,7 +163,7 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("listings/error", { message });
 });
 
-app.listen(8080, () => {
-    console.log("app listening on port 8080");
+app.listen(3000, () => {
+    console.log("app listening on port 3000");
 });
 

@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "cloudinary": "^1.21.0",
+    "colors": "1.4.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
@@ -23,6 +24,7 @@
     "ejs": "^3.1.10",
     "ejs-mate": "^4.0.0",
     "express": "^4.21.1",
+    "express-rate-limit": "8.5.2",
     "express-session": "^1.18.1",
     "google-auth-library": "^9.15.0",
     "joi": "^17.13.3",

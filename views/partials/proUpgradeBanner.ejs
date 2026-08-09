@@ -1,0 +1,37 @@
+<!-- Pro Expiry Warning Banner (For Pro users expiring soon) -->
+<% if (currUser && isExpiringSoon) { %>
+<div class="pro-upgrade-banner pro-expiry-warning" id="proBanner">
+    <button class="pro-banner-close" onclick="document.getElementById('proBanner').style.display='none'">×</button>
+    <div class="pro-banner-content">
+        <div class="pro-banner-header">
+            <div class="pro-banner-icon">⚠️</div>
+            <div class="pro-banner-text">
+                <h4>Pro Expiring Soon!</h4>
+            </div>
+        </div>
+        <p style="margin: 0; font-size: 0.85rem; opacity: 0.95;">Expires in <%= daysUntilExpiry %> day<%= daysUntilExpiry !== 1 ? 's' : '' %>. Renew to keep premium features.</p>
+        <a href="/subscription/upgrade" class="pro-banner-btn" style="text-decoration: none;">
+            Renew Pro
+        </a>
+    </div>
+</div>
+<% } %>
+
+<!-- Pro Upgrade Banner (Only show to free users) -->
+<% if (currUser && (!currUser.isPro || !currUser.isPro())) { %>
+<div class="pro-upgrade-banner" id="proBanner">
+    <button class="pro-banner-close" onclick="document.getElementById('proBanner').style.display='none'">×</button>
+    <div class="pro-banner-content">
+        <div class="pro-banner-header">
+            <div class="pro-banner-icon">⭐</div>
+            <div class="pro-banner-text">
+                <h4>Upgrade to Pro</h4>
+            </div>
+        </div>
+        <p style="margin: 0; font-size: 0.85rem; opacity: 0.95;">Unlock AI Assistant & Activity Feed</p>
+        <a href="/subscription/upgrade" class="pro-banner-btn" style="text-decoration: none;">
+            Get Pro - $9.99/mo
+        </a>
+    </div>
+</div>
+<% } %>

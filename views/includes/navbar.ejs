@@ -118,12 +118,15 @@
       </div>
       <!-- User Options -->
       <div class="navbar-nav">
-        <a class="nav-link add" href="/listings/new">Airbnb your home</a>
-        <% if (!currUser) { %>
+        <% if (typeof currUser !== 'undefined' && currUser && currUser.role === 'admin') { %>
+          <a class="nav-link add" href="/listings/new">Add Listing</a>
+          <a class="nav-link add" href="/admin/dashboard">Admin Dashboard</a>
+        <% } %>
+        <% if (typeof currUser === 'undefined' || !currUser) { %>
           <a class="nav-link" href="/signup"><b>Sign up</b></a>
           <a class="nav-link" href="/login"><b>Log in</b></a>
         <% } %>
-        <% if (currUser) { %>
+        <% if (typeof currUser !== 'undefined' && currUser) { %>
           <a class="nav-link" href="/logout"><b>Log out</b></a>
         <% } %>
       </div>

@@ -7,8 +7,21 @@ const { listingSchema, reviewSchema } = require("./schema.js");
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
-        req.flash("error", "You must be logged in to create listing");
+        req.flash("error", "You must be logged in");
         return res.redirect("/login");
+    }
+    next();
+};
+
+// Middleware to check if user is an admin
+module.exports.isAdmin = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        req.flash("error", "Please login as admin");
+        return res.redirect("/admin/login");
+    }
+    if (req.user.role !== 'admin') {
+        req.flash("error", "Access denied. Admin privileges required.");
+        return res.redirect("/listings");
     }
     next();
 };

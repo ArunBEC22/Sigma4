@@ -1,0 +1,208 @@
+<% layout("/layouts/boilerplate") %>
+
+<script>
+// Add body class to hide banner on upgrade page
+document.body.classList.add('upgrade-page');
+</script>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4">
+                    <span style="font-size: 48px;">⭐</span> Upgrade to Pro
+                </h1>
+                <p class="lead text-muted">Unlock premium features and enhance your booking experience</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Free Plan -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="card-title">Free Plan</h3>
+                            <div class="display-4 mb-3">$0<small class="text-muted fs-6">/month</small></div>
+                            <p class="text-muted">Perfect for casual travelers</p>
+                            
+                            <hr>
+                            
+                            <ul class="list-unstyled">
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> Browse unlimited listings</li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> Make bookings</li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> Leave reviews</li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> Basic search</li>
+                                <li class="mb-3 text-muted"><i class="fas fa-times text-danger me-2"></i> AI Booking Assistant</li>
+                                <li class="mb-3 text-muted"><i class="fas fa-times text-danger me-2"></i> Real-time Activity Feed</li>
+                                <li class="mb-3 text-muted"><i class="fas fa-times text-danger me-2"></i> Priority Support</li>
+                            </ul>
+                            
+                            <button class="btn btn-outline-secondary w-100 mt-3" disabled>Current Plan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-lg" style="border: 3px solid #4b5043;">
+                        <div class="card-header text-white text-center py-3" style="background: linear-gradient(135deg, #4b5043 0%, #2d5016 100%);">
+                            <h5 class="mb-0">🏆 Most Popular</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <h3 class="card-title">Pro Plan</h3>
+                            <div class="display-4 mb-3" style="color: #4b5043;">$9.99<small class="text-muted fs-6">/month</small></div>
+                            <p class="text-muted">For power users who want it all</p>
+                            
+                            <hr>
+                            
+                            <ul class="list-unstyled">
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Everything in Free</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>AI Booking Assistant</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Real-time Activity Feed</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Social Proof Widget</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Priority Support</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Advanced Analytics</strong></li>
+                                <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>Early Access to Features</strong></li>
+                            </ul>
+                            
+                            <form action="/subscription/create-checkout" method="POST">
+                                <button type="submit" class="btn btn-lg w-100 mt-3" style="background: linear-gradient(135deg, #4b5043 0%, #2d5016 100%); border: none; color: white;">
+                                    <i class="fas fa-crown me-2"></i> Get Pro Now
+                                </button>
+                            </form>
+                            
+                            <p class="text-center text-muted mt-3 mb-0">
+                                <small><i class="fas fa-lock me-1"></i> Secure payment via Stripe</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Showcase -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="text-center mb-4">What You Get with Pro</h3>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-robot fa-3x" style="color: #4b5043;"></i>
+                            </div>
+                            <h5>AI Booking Assistant</h5>
+                            <p class="text-muted">Get instant help with bookings, availability checks, and recommendations using our advanced AI chatbot.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-chart-line fa-3x" style="color: #2d5016;"></i>
+                            </div>
+                            <h5>Real-time Activity Feed</h5>
+                            <p class="text-muted">See what others are booking in real-time. Build trust with social proof and never miss trending properties.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-headset fa-3x" style="color: #4b5043;"></i>
+                            </div>
+                            <h5>Priority Support</h5>
+                            <p class="text-muted">Get faster response times and dedicated support from our team whenever you need assistance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="text-center mb-4">Frequently Asked Questions</h3>
+                </div>
+                <div class="col-md-8 offset-md-2">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    How long does Pro subscription last?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Your Pro subscription lasts for 1 month from the date of purchase. You'll receive a reminder before it expires.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    What happens when my subscription expires?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    When your Pro subscription expires, you'll automatically be switched back to the Free plan. You'll see a banner notification and can renew anytime.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Can I cancel my subscription?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Since this is a one-time monthly payment (not recurring), there's nothing to cancel. Simply don't renew when it expires if you don't want to continue.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    Is my payment secure?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes! All payments are processed securely through Stripe, a trusted payment processor used by millions of businesses worldwide.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5 mb-5">
+                <a href="/listings" class="btn btn-link">Maybe later, continue browsing</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feature-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>

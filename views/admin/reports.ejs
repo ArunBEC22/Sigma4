@@ -1,0 +1,260 @@
+<% layout("/admin/layout") %>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar"></i> Reports & Insights</h2>
+        <div>
+            <button class="btn btn-outline-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card primary">
+                <div class="icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <h3><%= occupancyRate.toFixed(1) %>%</h3>
+                <p>Occupancy Rate</p>
+                <small class="text-muted">Last 30 days</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card success">
+                <div class="icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h3>₹<%= averageBookingValue.toLocaleString() %></h3>
+                <p>Avg Booking Value</p>
+                <small class="text-muted">Per booking</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card warning">
+                <div class="icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3><%= averageStayDuration.toFixed(1) %></h3>
+                <p>Avg Stay Duration</p>
+                <small class="text-muted">Days per booking</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card info">
+                <div class="icon">
+                    <i class="fas fa-redo"></i>
+                </div>
+                <h3><%= repeatCustomerRate.toFixed(1) %>%</h3>
+                <p>Repeat Customers</p>
+                <small class="text-muted">Returning users</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Insights -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Revenue Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Bookings</th>
+                                <th>Revenue</th>
+                                <th>Growth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>This Month</strong></td>
+                                <td><%= revenueBreakdown.thisMonth.bookings %></td>
+                                <td>₹<%= revenueBreakdown.thisMonth.revenue.toLocaleString() %></td>
+                                <td>
+                                    <% if (revenueBreakdown.thisMonth.growth >= 0) { %>
+                                        <span class="badge bg-success">+<%= revenueBreakdown.thisMonth.growth.toFixed(1) %>%</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger"><%= revenueBreakdown.thisMonth.growth.toFixed(1) %>%</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last Month</strong></td>
+                                <td><%= revenueBreakdown.lastMonth.bookings %></td>
+                                <td>₹<%= revenueBreakdown.lastMonth.revenue.toLocaleString() %></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>This Year</strong></td>
+                                <td><%= revenueBreakdown.thisYear.bookings %></td>
+                                <td>₹<%= revenueBreakdown.thisYear.revenue.toLocaleString() %></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Top Performing Listings</h5>
+                </div>
+                <div class="card-body">
+                    <% if (topListings && topListings.length > 0) { %>
+                        <div class="list-group list-group-flush">
+                            <% topListings.slice(0, 5).forEach((item, index) => { %>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-primary me-2">#<%= index + 1 %></span>
+                                        <strong><%= item.listing ? item.listing.title : 'Unknown' %></strong>
+                                        <br>
+                                        <small class="text-muted"><%= item.bookings %> bookings</small>
+                                    </div>
+                                    <span class="badge bg-success">₹<%= item.revenue.toLocaleString() %></span>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted text-center py-4">No data available</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Insights -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-users"></i> Customer Insights</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>New Customers</span>
+                            <strong><%= customerInsights.newCustomers %></strong>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-info" style="width: <%= (customerInsights.newCustomers / customerInsights.totalCustomers * 100).toFixed(0) %>%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Returning Customers</span>
+                            <strong><%= customerInsights.returningCustomers %></strong>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: <%= (customerInsights.returningCustomers / customerInsights.totalCustomers * 100).toFixed(0) %>%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total Active Users</span>
+                            <strong><%= customerInsights.totalCustomers %></strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <h4 class="text-primary">₹<%= customerInsights.lifetimeValue.toLocaleString() %></h4>
+                        <small class="text-muted">Average Customer Lifetime Value</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Action Required</h5>
+                </div>
+                <div class="card-body">
+                    <% if (actionItems && actionItems.length > 0) { %>
+                        <ul class="list-unstyled">
+                            <% actionItems.forEach(item => { %>
+                                <li class="mb-3 p-3 border-start border-4 <%= item.priority === 'high' ? 'border-danger' : item.priority === 'medium' ? 'border-warning' : 'border-info' %> bg-light">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong><%= item.title %></strong>
+                                            <p class="mb-0 small text-muted"><%= item.description %></p>
+                                        </div>
+                                        <span class="badge bg-<%= item.priority === 'high' ? 'danger' : item.priority === 'medium' ? 'warning' : 'info' %>">
+                                            <%= item.priority.toUpperCase() %>
+                                        </span>
+                                    </div>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="text-muted">All good! No action items at the moment.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Trends -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Booking Status Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h3 class="text-success"><%= bookingStatus.confirmed %></h3>
+                                <p class="text-muted mb-0">Confirmed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h3 class="text-warning"><%= bookingStatus.pending %></h3>
+                                <p class="text-muted mb-0">Pending Payment</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-ban fa-2x text-danger mb-2"></i>
+                                <h3 class="text-danger"><%= bookingStatus.cancelled %></h3>
+                                <p class="text-muted mb-0">Cancelled</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-calendar-check fa-2x text-info mb-2"></i>
+                                <h3 class="text-info"><%= bookingStatus.completed %></h3>
+                                <p class="text-muted mb-0">Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .sidebar, .top-header, button {
+            display: none !important;
+        }
+        .main-content {
+            margin-left: 0 !important;
+        }
+    }
+</style>

@@ -1,0 +1,144 @@
+<% layout('admin/layout') -%>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Booking Calendar</h5>
+    </div>
+    <div class="card-body">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Booking Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="viewDetailsBtn" class="btn btn-primary">View Full Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h6 class="mb-3">Legend:</h6>
+        <div class="row">
+            <div class="col-md-3">
+                <span class="badge bg-success me-2">■</span> Confirmed
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-warning text-dark me-2">■</span> Pending Payment
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-danger me-2">■</span> Cancelled
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-secondary me-2">■</span> Payment Failed
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listMonth'
+            },
+            events: '/admin/api/calendar-data',
+            eventClick: function(info) {
+                const event = info.event;
+                const props = event.extendedProps;
+                
+                // Build modal content
+                const content = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Booking ID:</strong>
+                            <p class="font-monospace">${event.id}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong>
+                            <p><span class="badge" style="background-color: ${event.backgroundColor}">${props.status}</span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Check-in:</strong>
+                            <p>${event.start.toLocaleDateString()}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Check-out:</strong>
+                            <p>${event.end ? event.end.toLocaleDateString() : 'N/A'}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Guests:</strong>
+                            <p>${props.guests}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Amount:</strong>
+                            <p class="text-success fs-5">₹${props.amount.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <strong>Listing & User:</strong>
+                        <p>${event.title}</p>
+                    </div>
+                `;
+                
+                document.getElementById('modalContent').innerHTML = content;
+                document.getElementById('viewDetailsBtn').href = `/admin/bookings/${event.id}`;
+                
+                const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+                modal.show();
+            },
+            eventDidMount: function(info) {
+                // Add tooltip
+                info.el.title = `${info.event.title}\nStatus: ${info.event.extendedProps.status}\nAmount: ₹${info.event.extendedProps.amount}`;
+            }
+        });
+        
+        calendar.render();
+    });
+</script>
+
+<style>
+    #calendar {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .fc-event {
+        cursor: pointer;
+    }
+    
+    .fc-event:hover {
+        opacity: 0.8;
+    }
+</style>

@@ -2,6 +2,7 @@ const Listing = require("../models/listing");
 const { listingSchema } = require('../schema.js');
 const validateAddress = require("../utils/validateAddress");
 const Review = require("../models/review");
+const activityLogger = require("../utils/activityLogger");
 
 // GET all listings
 module.exports.index = async (req, res) => {
@@ -26,7 +27,13 @@ module.exports.showListing = async (req, res) => {
     return res.redirect("/listings");
   }
 
-  res.render("listings/show.ejs", { listing1 });
+  // Log view activity
+  activityLogger.logView(id);
+  
+  // Get social proof data
+  const socialProof = await activityLogger.getSocialProof(id);
+
+  res.render("listings/show.ejs", { listing1, socialProof });
 };
 
 // POST create a new listing (with address validation)
